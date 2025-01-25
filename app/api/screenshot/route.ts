@@ -69,7 +69,7 @@ export async function POST(req: Request) {
 
     // Wait for specified delay
     if (validated.delay > 0) {
-      await page.waitForTimeout(validated.delay)
+      await new Promise((resolve) => setTimeout(resolve, validated.delay))
     }
 
     // Take screenshot
