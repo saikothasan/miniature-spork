@@ -73,24 +73,28 @@ export async function POST(req: Request) {
     }
 
     // Take screenshot
-    let screenshot: Buffer
+    let screenshotData: Buffer
     if (validated.format === "pdf") {
-      screenshot = await page.pdf({
+      const pdfBuffer = await page.pdf({
         format: "A4",
         printBackground: true,
       })
+      screenshotData = Buffer.from(pdfBuffer)
     } else {
-      screenshot = (await page.screenshot({
+      const screenshotBuffer = await page.screenshot({
         fullPage: validated.fullSize,
         type: validated.format,
         quality: validated.format === "jpeg" ? validated.quality : undefined,
-      })) as Buffer
+      })
+      screenshotData = Buffer.from(screenshotBuffer)
     }
 
     await browser.close()
 
+    // Convert screenshot to base64
+    const base64Screenshot = screenshotData.toString("base64")
+
     // Return screenshot as base64
-    const base64Screenshot = screenshot.toString("base64")
     return NextResponse.json({
       success: true,
       screenshot: `data:${validated.format === "pdf" ? "application/pdf" : `image/${validated.format}`};base64,${base64Screenshot}`,
