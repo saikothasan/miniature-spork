@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     const validated = screenshotSchema.parse(data)
 
     const browser = await puppeteer.launch({
-      headless: "new" as const,
+      headless: true,
     })
 
     const page = await browser.newPage()
