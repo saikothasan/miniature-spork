@@ -38,7 +38,14 @@ export async function POST(req: Request) {
     if (validated.noAds) {
       await page.setRequestInterception(true)
       page.on("request", (request) => {
-        if (request.resourceType() === "advertisement" || request.resourceType() === "media") {
+        const resourceType = request.resourceType()
+        if (
+          resourceType === "image" ||
+          resourceType === "media" ||
+          resourceType === "script" ||
+          request.url().includes("ads") ||
+          request.url().includes("analytics")
+        ) {
           request.abort()
         } else {
           request.continue()
